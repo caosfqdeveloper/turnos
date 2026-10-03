@@ -53,6 +53,7 @@ function Pantalla({ children }) {
 function Aviso({ ok, children }) {
   return (
     <div
+      role="alert"
       className={`mt-4 rounded-lg p-4 font-medium ${
         ok ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
       }`}
@@ -117,8 +118,8 @@ export default function FormularioTurno() {
     let activo = true;
     fetch(`${API}/horarios_libres.php?servicio_id=${s}&profesional_id=${p}&fecha=${f}`)
       .then((r) => r.json())
-      .then((d) => activo && setResultado({ clave, lista: d.success ? d.horarios : [] }))
-      .catch(() => activo && setResultado({ clave, lista: [] }));
+      .then((d) => activo && setResultado({ clave, lista: d.success ? d.horarios : [], fallo: !d.success }))
+      .catch(() => activo && setResultado({ clave, lista: [], fallo: true }));
     return () => {
       activo = false;
     };
@@ -303,6 +304,10 @@ export default function FormularioTurno() {
             <h2 className="mb-2 font-semibold text-stone-800">4. Elegí el horario</h2>
             {buscando ? (
               <p className="text-stone-500">Buscando horarios...</p>
+            ) : resultado.fallo ? (
+              <p className="font-medium text-red-700">
+                No se pudieron cargar los horarios. Verificá la conexión y volvé a elegir la fecha.
+              </p>
             ) : horarios.length === 0 ? (
               <p className="text-stone-500">
                 No hay horarios libres ese día. Probá con otra fecha.
@@ -339,6 +344,8 @@ export default function FormularioTurno() {
               onChange={(e) => setNombre(e.target.value)}
               className={campo}
               placeholder="Nombre y apellido"
+              aria-label="Nombre y apellido"
+              autoComplete="name"
             />
             <input
               type="tel"
@@ -347,6 +354,8 @@ export default function FormularioTurno() {
               onChange={(e) => setTelefono(e.target.value)}
               className={campo}
               placeholder="Teléfono (ej: 1155551234)"
+              aria-label="Teléfono"
+              autoComplete="tel"
             />
           </section>
         )}

@@ -93,6 +93,43 @@ try {
         }
     }
 
+    // No permitir cambios que dejen turnos reservados sin cobertura
+    if ($id !== null) {
+        $stmt = $pdo->prepare(
+            "SELECT fecha_hora, duracion_min, servicio_id FROM turnos
+             WHERE profesional_id = :id AND estado = 'reservado' AND fecha_hora > :ahora"
+        );
+        $stmt->execute([':id' => $id, ':ahora' => date('Y-m-d H:i:s')]);
+
+        $afectados = 0;
+        foreach ($stmt->fetchAll() as $t) {
+            $ini = new DateTimeImmutable($t['fecha_hora']);
+            $fin = $ini->modify('+' . (int) $t['duracion_min'] . ' minutes');
+            $cubierto = $activo === 1
+                && ($t['servicio_id'] === null || in_array((int) $t['servicio_id'], $servicios, true));
+            if ($cubierto) {
+                $cubierto = false;
+                foreach ($limpios as [$d, $desde, $hasta]) {
+                    if ($d !== (int) $ini->format('N')) {
+                        continue;
+                    }
+                    $a = new DateTimeImmutable($ini->format('Y-m-d') . ' ' . $desde . ':00');
+                    $b = new DateTimeImmutable($ini->format('Y-m-d') . ' ' . $hasta . ':00');
+                    if ($ini >= $a && $fin <= $b) {
+                        $cubierto = true;
+                        break;
+                    }
+                }
+            }
+            if (!$cubierto) {
+                $afectados++;
+            }
+        }
+        if ($afectados > 0) {
+            responder(409, false, "No se puede guardar: $afectados turno(s) reservado(s) quedarían fuera de horario, con un servicio que ya no hace o con el barbero inactivo. Cancelalos primero desde la pantalla de turnos.");
+        }
+    }
+
     $pdo->beginTransaction();
 
     if ($id === null) {
