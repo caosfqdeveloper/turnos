@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FormularioTurno from "./FormularioTurno";
 import Panel from "./Panel";
 import Barberos from "./Barberos";
+import Servicios from "./Servicios";
 
 export default function App() {
   const [vista, setVista] = useState(window.location.hash);
@@ -13,5 +14,6 @@ export default function App() {
   }, []);
 
   if (vista === "#/panel/barberos") return <Barberos />;
+  if (vista === "#/panel/servicios") return <Servicios />;
   return vista === "#/panel" ? <Panel /> : <FormularioTurno />;
 }

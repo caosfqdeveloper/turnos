@@ -123,6 +123,9 @@ export default function Panel() {
             <a href="#/panel/barberos" className="text-sm text-stone-600 underline">
               Barberos
             </a>
+            <a href="#/panel/servicios" className="text-sm text-stone-600 underline">
+              Servicios
+            </a>
           </div>
           <button type="button" onClick={salir} className="text-sm text-stone-500 underline">
             Salir
