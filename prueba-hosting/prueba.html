@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Prueba de API</title>
+<button id="b">Probar API</button>
+<pre id="r"></pre>
+<script>
+document.getElementById('b').onclick = async () => {
+  const r = document.getElementById('r');
+  try {
+    const g = await fetch('/ping.php');
+    const t1 = await g.text();
+    const p = await fetch('/ping.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Clave': 'x' },
+      body: JSON.stringify({ a: 1 }),
+    });
+    const t2 = await p.text();
+    r.textContent = 'GET ' + g.status + ': ' + t1.slice(0, 150) + '\n\nPOST ' + p.status + ': ' + t2.slice(0, 150);
+  } catch (e) {
+    r.textContent = 'Error: ' + e;
+  }
+};
+</script>

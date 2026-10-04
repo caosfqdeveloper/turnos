@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // ---- Datos del negocio (cambiar acá para cada cliente) ----
 const NOMBRE_NEGOCIO = "Barbería & Peluquería";
-const API = "http://localhost/api";
+const API = import.meta.env.VITE_API_URL ?? "/api";
 
 // Número de WhatsApp del local: código de país + área + número, sin "+" ni espacios
 const WHATSAPP_LOCAL = "549TUCODIGODEAREATUNUMERO";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API = "http://localhost/api";
+const API = import.meta.env.VITE_API_URL ?? "/api";
 
 const pad = (n) => String(n).padStart(2, "0");
 
